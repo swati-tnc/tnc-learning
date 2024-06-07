@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="user_form_success" name="User Form Success">
+        <t t-call="website.layout">
+            <div class="container">
+                <h2>Details submitted and saved successfully!</h2>
+            </div>
+        </t>
+    </template>
+
+</odoo>
+

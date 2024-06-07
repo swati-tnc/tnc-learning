@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <template id="user_information" name="User Form">
+            <t t-call="website.layout">
+                <div class="container">
+                    <form method="post" action="/webform/submit" class="user-form">
+                        <h3 class="user-heading">User Information</h3>
+                        <p class="user-para">Expect a swift response from our team as we strive to address your inquiries promptly.</p>
+                        <div class= "user-div">
+                            <input class="custom-input" type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <label class="cus-label" for="first_name">First Name*</label>
+                            <input class="custom-input" type="text" name="first_name"/><br/><br/>
+                            <label class="cus-label" for="middle_name">Middle Name</label>
+                            <input class="custom-input" type="text" name="middle_name"/><br/><br/>
+                            <label class="cus-label" for="last_name">Last Name*</label>
+                            <input class="custom-input" type="text" name="last_name"/><br/><br/>
+                            <label class="cus-label" for="mobile_no">Mobile No.*</label>
+                            <input class="custom-input" type="text" name="mobile_no"/><br/><br/>
+                            <label class="cus-label" for="email">Email*</label>
+                            <input class="custom-input" type="email" name="email"/><br/><br/>
+                            <label class="cus-label" for="father_name">Father's Name:</label>
+                            <input class="custom-input" type="text" name="father_name"/><br/><br/>
+                            <label class="cus-label" for="education">Education*</label>
+                            <select class="custom-input" name="education">
+                                <option value="btech_ece">BTech in ECE</option>
+                                <option value="btech_cse">BTech in CSE</option>
+                                <option value="btech_me">BTech in ME</option>
+                                <option value="btech_ce">BTech in CE</option>
+                                <option value="mtech">MTech</option>
+                                <option value="phd">PhD</option>
+                                <option value="other">Other</option>
+                            </select><br/><br/>
+                        </div>
+                        <input  type="submit" value="Submit" class="btn btn-primary custom-button" />
+                    </form>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

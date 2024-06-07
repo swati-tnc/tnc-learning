@@ -1,0 +1,70 @@
+<odoo>
+  <!-- <record id="user_information" model="ir.actions.act_window">
+    <field name="name">User Info</field>
+    <field name="res_model">user.information</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[]</field>
+    <field name="context">{}</field>
+  </record> -->
+
+
+
+  <!--  tree view of the patient model  -->
+  <record id="user_info_tree" model="ir.ui.view">
+    <field name="name">user.information.form</field>
+    <field name="model">user.information</field>
+    <field name="arch" type="xml">
+    <tree string="users">
+      <field name="first_name"/>
+      <field name="mobile_no"/>
+      <field name="email"/>
+      <field name="education"/>
+    </tree>
+    </field>
+  </record>
+
+
+
+  <!--  form view of the patient model  -->
+  <record id="user_view_form" model="ir.ui.view">
+    <field name="name">user.information.form</field>
+    <field name="model">user.information</field>
+    <field name="arch" type="xml">
+      <form string="users">
+        <sheet>
+          <group>
+            <group>
+              <field name="first_name"/>
+              <field name="middle_name"/>
+              <field name="last_name"/>
+            </group>
+            <group>
+              <field name="email"/>
+              <field name="mobile_no"/>
+              <field name="father_name"/>
+            </group>
+            <group>
+              <field name="education"/>
+            </group>
+          </group>
+        </sheet>
+    </form>
+    </field>
+  </record>
+  
+    <!-- action of the patients menu -->
+    <record id="action_user" model="ir.actions.act_window">
+      <field name="name">Users</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">user.information</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face"> Create First User! </p>
+      </field>
+    </record>
+
+
+
+  <menuitem id="menu_user_root" name="User" sequence='0'/>
+  <menuitem id="menu_user_information" name="User Info" parent="menu_user_root" action="action_user"/>
+</odoo>
