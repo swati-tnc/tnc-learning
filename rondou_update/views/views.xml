@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="products_item_custom" inherit_id="website_sale.products_item">
+        <xpath expr="." position="replace">
+            <form action="/shop/cart/update" method="post" class="oe_product_cart h-100 d-flex"
+                t-att-data-publish="product.website_published and 'on' or 'off'"
+                itemscope="itemscope" itemtype="http://schema.org/Product">
+
+                <t t-set="product_href" t-value="keep(product.website_url, page=(pager['page']['num'] if pager['page']['num'] > 1 else None))" />
+                <t t-set="image_type" t-value="product._get_suitable_image_size(ppr, td_product['x'], td_product['y'])"/>
+
+                <div class="oe_product_image position-relative h-100 flex-grow-0 overflow-hidden">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" t-nocache="The csrf token must always be up to date."/>
+                    <a t-att-href="product_href" class="oe_product_image_link d-block h-100 position-relative" itemprop="url" contenteditable="false">
+                        <t t-set="image_holder" t-value="product._get_image_holder()"/>
+                        <span t-field="image_holder.image_1920"
+                            t-options="{'widget': 'image', 'preview_image': image_type, 'itemprop': 'image', 'class': 'h-100 w-100 position-absolute'}"
+                            class="oe_product_image_img_wrapper d-flex h-100 justify-content-center align-items-center position-absolute"/>
+
+                        <t t-set="bg_color" t-value="td_product['ribbon']['bg_color'] or ''"/>
+                        <t t-set="text_color" t-value="td_product['ribbon']['text_color']"/>
+                        <t t-set="bg_class" t-value="td_product['ribbon']['html_class']"/>
+                        <span t-attf-class="o_ribbon o_not_editable #{bg_class}" t-attf-style="#{text_color and ('color: %s; ' % text_color)}#{bg_color and 'background-color:' + bg_color}" t-out="td_product['ribbon']['html'] or ''"/>
+                    </a>
+                </div>
+                <div class="o_wsale_product_information position-relative d-flex flex-column flex-grow-1 flex-shrink-1">
+                    <div class="o_wsale_product_information_text flex-grow-1">
+                        <h6 class="o_wsale_products_item_title mb-2">
+                            <a class="text-primary text-decoration-none" itemprop="name" t-att-href="product_href" t-att-content="product.name" t-field="product.name" />
+                            <a t-if="not product.website_published" role="button" t-att-href="product_href" class="btn btn-sm btn-danger" title="This product is unpublished.">
+                                Unpublished
+                            </a>
+                        </h6>
+                    </div>
+                    
+                    <div class="product_quantity_controls d-flex align-items-center mt-2">
+                        <div class="css_quantity me-2 align-middle" contenteditable="false">
+                            <span t-att-id="'quantityDisplay_' + str(product.id)" t-esc="product.quantity_custom"/>
+                        </div>
+                        <div class="unit_select me-2 align-middle">
+                            <t t-if="product.categ_id and product.categ_id.name in ['All', 'Consumable']">
+                                <select t-att-id="'selectBox_' + str(product.id)" t-att-onchange="'handleChange(' + str(product.id) + ')'" t-att-data-product-id="product.id">
+                                    <option value="1">gram</option>
+                                    <option value="2">kg</option>
+                                </select>
+
+                            </t>
+                            <t t-else="">
+                                <span>stuk</span>
+                            </t>
+                        </div>
+                        <div class="quantity_buttons">
+                            <button type="button" class="btn btn-link minus-custom" onclick="decrementQuantity(this)" t-att-data-product-id="product.id" t-att-data-product-price="product.list_price" aria-label="Remove one" title="Remove one">
+                                <i class="fa fa-minus minus-custom"></i>
+                            </button>
+                            <button type="button" class="btn btn-link plus-custom" onclick="incrementQuantity(this)" t-att-data-product-id="product.id" t-att-data-product-price="product.list_price" aria-label="Add one" title="Add one">
+                                <i class="fa fa-plus plus-custom"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                    <div class="product_total_price mt-2 d-flex align-items-center">
+                        <button type="button" class="button-custom" title="Add to cart">
+                            Bestellen
+                        </button>
+                        <span class="h6 mb-0" t-att-id="'totalPriceDisplay_' + str(product.id)">
+                            <t t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                        </span>
+                    </div>
+                    <div class="o_wsale_product_sub d-flex justify-content-between align-items-end gap-2 flex-wrap pb-1">
+                        <t t-set="template_price_vals" t-value="get_product_prices(product)"/>
+                        <div class="o_wsale_product_btn"/>
+                        <div class="product_price yprice" itemprop="offers" itemscope="itemscope" itemtype="http://schema.org/Offer">
+                            <t t-if="'base_price' in template_price_vals and (template_price_vals['base_price'] > template_price_vals['price_reduce']) and (template_price_vals['price_reduce'] or not website.prevent_zero_price_sale)">
+                                <del t-attf-class="text-muted me-1 h6 mb-0" style="white-space: nowrap;">
+                                    <em class="small" t-esc="template_price_vals['base_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+                                </del>
+                            </t>
+                            <span class="h6 mb-0 y1price" t-att-id="'priceDisplay_' + str(product.id)" t-if="template_price_vals['price_reduce'] or not website.prevent_zero_price_sale" t-esc="template_price_vals['price_reduce']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                            <span class="h6 mb-0 y1price" t-else="" t-field="website.prevent_zero_price_sale_text"/>
+                            <span itemprop="price" style="display:none;" t-esc="template_price_vals['price_reduce']" />
+                            <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name" />
+                        </div>
+                    </div>
+
+                 <script>
+                    function updateTotalPrice(productId, unitPrice) {
+                        var quantityDisplay = document.getElementById('quantityDisplay_' + productId);
+                        var totalPriceDisplay = document.getElementById('totalPriceDisplay_' + productId);
+                        var currentQuantity = parseFloat(quantityDisplay.textContent);
+                        var totalPrice = currentQuantity * unitPrice;
+                        totalPriceDisplay.textContent = totalPrice.toFixed(2);
+                    }
+
+                    function incrementQuantity(button) {
+                        var productId = button.getAttribute('data-product-id');
+                        var unitPrice = parseFloat(button.getAttribute('data-product-price'));
+                        var quantityDisplay = document.getElementById('quantityDisplay_' + productId);
+                        var currentQuantity = parseFloat(quantityDisplay.textContent);
+
+                        // Determine the increment based on unit and category
+                        var selectBox = document.getElementById('selectBox_' + productId);
+                        var selectedValue = selectBox ? selectBox.options[selectBox.selectedIndex].value : null;
+
+                        var increment;
+                        if (selectedValue === "2") {
+                            increment = 0.250;
+                        } else if (selectedValue === "1") {
+                            increment = 50;
+                        } else {
+                             increment = 1;
+                        }
+
+                        // Update quantity
+                        quantityDisplay.textContent = (currentQuantity + increment).toFixed(selectedValue === "2" ? 3 : 0);
+
+                        updateTotalPrice(productId, unitPrice);
+                    }
+
+
+                    function decrementQuantity(button) {
+                        var productId = button.getAttribute('data-product-id');
+                        var unitPrice = parseFloat(button.getAttribute('data-product-price'));
+                        var quantityDisplay = document.getElementById('quantityDisplay_' + productId);
+                        var currentQuantity = parseFloat(quantityDisplay.textContent);
+
+                        // Determine the decrement based on unit and category
+                        var selectBox = document.getElementById('selectBox_' + productId);
+                        var selectedValue = selectBox ? selectBox.options[selectBox.selectedIndex].value : null; 
+                        
+                        var decrement;
+                         if (selectedValue === "2") {
+                            decrement = 0.250;
+                        } else if (selectedValue === "1") {
+                            decrement = 50;
+                        } else {
+                            decrement = 1;
+                        }
+                        
+
+                     // Update quantity
+                        quantityDisplay.textContent = (currentQuantity - decrement).toFixed(selectedValue === "2" ? 3 : 0);
+
+                        updateTotalPrice(productId, unitPrice);
+                    }
+
+                    function handleChange(productId) {
+                        var selectBox = document.getElementById('selectBox_' + productId);
+                        if (selectBox) {
+                            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+                            var quantityDisplay = document.getElementById('quantityDisplay_' + productId);
+                            var quantityCustom = parseFloat(quantityDisplay.textContent);
+
+                            if (selectedValue === "2") {
+                                // Convert to kg and display as float with three decimal places
+                                if (!isNaN(quantityCustom)) {
+                                    quantityDisplay.textContent = (quantityCustom / 1000).toFixed(3);
+                                }
+                            } else if (selectedValue === "1") {
+                                // Convert to gram and display as integer
+                                if (!isNaN(quantityCustom)) {
+                                    quantityDisplay.textContent = Math.round(quantityCustom * 1000);
+                                }
+                            }
+                        }
+                    }
+                </script>
+                </div>
+            </form>
+        </xpath>
+    </template>
+</odoo>

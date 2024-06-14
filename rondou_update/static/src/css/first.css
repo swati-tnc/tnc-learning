@@ -1,0 +1,46 @@
+
+.custom-sel{
+    background-color: #ffc0c003;
+    border: none !important;
+  }
+  
+  .minus-custom{
+    padding: 4px 4px; 
+    font-size: 13px;
+    border: none;
+  }
+  .plus-custom{
+    padding: 4px 4px;
+    font-size: 13px; 
+    border: none; 
+    border-radius: 100%; 
+    background-color: #FF5B65; 
+    color: white; 
+    cursor: pointer
+  }
+  
+  
+  .custom-qty{
+    color: black;
+  }
+  
+.quantity_buttons{
+  padding-left: 44px;
+}
+
+.button-custom {
+  background-color: #FF5B65;
+  color: white;
+  font-size: 12px;
+  padding: 7px;
+  border-radius: 5px;
+  margin-right: 40px;
+}
+
+.yprice{
+  margin-left: 120px;
+ 
+}
+.y1price{
+  font-size: 13px;
+}
