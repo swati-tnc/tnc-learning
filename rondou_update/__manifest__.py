@@ -9,7 +9,7 @@
     'depends': ['theme_lrondou'],
 
     'data': [
-        
+        'views/cartfix.xml',
         'views/views.xml',
     ],
     'assets': {
